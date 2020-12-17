@@ -19,13 +19,10 @@ const (
 func main() {
 
 	loggerProductAPI := log.New(os.Stdout, "product-api", log.LstdFlags)
-	hh := handlers.NewHello(loggerProductAPI)
-	gh := handlers.NewGoodbye(loggerProductAPI)
+	ph := handlers.NewProducts(loggerProductAPI)
 
 	sm := http.NewServeMux()
-	sm.Handle("/", hh)
-	sm.Handle("/goodbye", gh)
-
+	sm.Handle("/", ph)
 	// Custom server
 	s := &http.Server{
 		Addr:         fmt.Sprintf(":%s", port),
