@@ -3,6 +3,7 @@ module github.com/owais1412/simpleServer
 go 1.14
 
 require (
+	github.com/go-openapi/runtime v0.19.24 // indirect
 	github.com/go-playground/universal-translator v0.17.0 // indirect
 	github.com/go-playground/validator v9.31.0+incompatible
 	github.com/gorilla/mux v1.8.0

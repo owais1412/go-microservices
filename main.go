@@ -9,7 +9,9 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/go-openapi/runtime/middleware"
 	"github.com/gorilla/mux"
+	"github.com/owais1412/simpleServer/data"
 	"github.com/owais1412/simpleServer/handlers"
 )
 
@@ -20,19 +22,36 @@ const (
 func main() {
 
 	loggerProductAPI := log.New(os.Stdout, "product-api", log.LstdFlags)
-	ph := handlers.NewProducts(loggerProductAPI)
+	validation := data.NewValidation()
 
+	// create the handlers
+	ph := handlers.NewProducts(loggerProductAPI, validation)
+
+	// create a new serve mux and register the handlers
 	sm := mux.NewRouter()
+
+	// handlers for API
 	getRouter := sm.Methods(http.MethodGet).Subrouter()
-	getRouter.HandleFunc("/", ph.GetProducts)
+	getRouter.HandleFunc("/products", ph.ListAll)
+	getRouter.HandleFunc("/products/{id:[0-9]+}", ph.ListSingle)
 
 	putRouter := sm.Methods(http.MethodPut).Subrouter()
-	putRouter.HandleFunc("/{id:[0-9]+}", ph.UpdateProduct)
+	putRouter.HandleFunc("/products", ph.Update)
 	putRouter.Use(ph.MiddlewareValidateProduct)
 
 	postRouter := sm.Methods(http.MethodPost).Subrouter()
-	postRouter.HandleFunc("/", ph.AddProduct)
+	postRouter.HandleFunc("/products", ph.Create)
 	postRouter.Use(ph.MiddlewareValidateProduct)
+
+	deleteRouter := sm.Methods(http.MethodDelete).Subrouter()
+	deleteRouter.HandleFunc("/products/{id:[0-9]+}/", ph.Delete)
+
+	// handler for documnetation
+	opts := middleware.RedocOpts{SpecURL: "/swagger.yaml"}
+	sh := middleware.Redoc(opts, nil)
+	getRouter.Handle("/docs", sh)
+	getRouter.Handle("/swagger.yaml", http.FileServer(http.Dir("./")))
+
 	// Custom server
 	s := &http.Server{
 		Addr:         fmt.Sprintf(":%s", port),
