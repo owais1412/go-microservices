@@ -9,7 +9,7 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/owais1412/simpleServer/handlers"
+	"github.com/owais1412/go-microservices/handlers"
 )
 
 const (

@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"strconv"
 
-	"github.com/owais1412/simpleServer/data"
+	"github.com/owais1412/go-microservices/data"
 )
 
 // Products struct
